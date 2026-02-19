@@ -179,6 +179,7 @@ Alternative Considered: Last-Write-Wins
 
 ❌ Rejected because it loses user intent silently \
 Example: User A's move gets overwritten by User B without notification
+
 ---
 
 ### 3. Soft Delete Cascade
