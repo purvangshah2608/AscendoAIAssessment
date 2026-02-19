@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 
 class ListCreate(BaseModel):
     name: str = Field(min_length=1, max_length=255)
-    after_list_id: int | None = None  # Insert after this list
+    after_list_id: int | None = None
 
 
 class ListUpdate(BaseModel):
