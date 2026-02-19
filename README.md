@@ -241,7 +241,9 @@ API Behavior:
 Deleting a Board returns 204 No Content \
 Fetching a soft-deleted Board returns 404 Not Found \
 Child entities (Lists, Cards) are NOT cascade-deleted (remain for audit)
+
 ---
+
 ### 4. N+1 Query Prevention
 Problem: Loading a board with 5 lists and 20 cards per list could result in:
 
