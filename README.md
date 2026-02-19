@@ -170,14 +170,14 @@ try {
 
 Why This Approach?
 
-✅ No pessimistic locks - Users aren't blocked from moving cards
-✅ Clear conflict detection - Frontend receives explicit 409 error
-✅ User awareness - User is notified when conflicts occur
+✅ No pessimistic locks - Users aren't blocked from moving cards \
+✅ Clear conflict detection - Frontend receives explicit 409 error \
+✅ User awareness - User is notified when conflicts occur \
 ✅ Data integrity - No silent overwrites (last-write-wins rejected)
 
 Alternative Considered: Last-Write-Wins
 
-❌ Rejected because it loses user intent silently
+❌ Rejected because it loses user intent silently \
 Example: User A's move gets overwritten by User B without notification
 ---
 
@@ -231,9 +231,9 @@ all_boards = await db.execute(
 ```
 Why Soft Deletes?
 
-✅ Audit Trail: Full history of all actions
-✅ Undo Capability: Can restore deleted items
-✅ Compliance: Required for many regulations (GDPR, SOX)
+✅ Audit Trail: Full history of all actions \
+✅ Undo Capability: Can restore deleted items \
+✅ Compliance: Required for many regulations (GDPR, SOX) \
 ✅ Data Analysis: Historical data for analytics
 
 API Behavior:
