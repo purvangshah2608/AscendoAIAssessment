@@ -238,8 +238,8 @@ Why Soft Deletes?
 
 API Behavior:
 
-Deleting a Board returns 204 No Content
-Fetching a soft-deleted Board returns 404 Not Found
+Deleting a Board returns 204 No Content \
+Fetching a soft-deleted Board returns 404 Not Found \
 Child entities (Lists, Cards) are NOT cascade-deleted (remain for audit)
 ---
 ### 4. N+1 Query Prevention
