@@ -197,6 +197,9 @@ function App() {
               onClick={() => {
                 setIsRegister(!isRegister);
                 setAuthError(null);
+                setEmail('');
+                setPassword('');
+                setFullName('');
               }}
               className="text-blue-600 hover:underline"
             >
@@ -285,7 +288,10 @@ function App() {
   return (
     <Board
       boardId={selectedBoardId}
-      onBack={() => setSelectedBoardId(null)}
+      onBack={() => {
+        setSelectedBoardId(null);
+        loadBoards(); // Fetch the fresh list from the database
+      }}
       onLogout={handleLogout}
     />
   );

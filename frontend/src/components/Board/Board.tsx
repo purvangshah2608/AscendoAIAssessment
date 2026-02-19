@@ -11,7 +11,7 @@ import {
   type DragEndEvent,
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { Plus, Loader2, ArrowLeft, LogOut } from 'lucide-react';
+import { Plus, Loader2, ArrowLeft, LogOut, Trash2 } from 'lucide-react';
 import { List } from '../List';
 import { Card, CardModal } from '../Card';
 import { useBoard } from '../../hooks/useBoard';
@@ -33,6 +33,8 @@ export function Board({ boardId, onBack, onLogout }: BoardProps) {
     moveCard,
     deleteCard,
     deleteList,
+    deleteBoard,
+    isDeletingBoard,
   } = useBoard(boardId);
 
   const [activeCard, setActiveCard] = useState<CardType | null>(null);
@@ -174,6 +176,17 @@ export function Board({ boardId, onBack, onLogout }: BoardProps) {
     [board, moveCard]
   );
 
+  const handleDeleteBoard = async () => {
+    if (window.confirm('Are you sure you want to delete this board? This action cannot be undone.')) {
+      try {
+        await deleteBoard();
+        onBack(); // Navigate back to the board list immediately on success
+      } catch (error) {
+        // Error is handled by the toast in useBoard hook
+      }
+    }
+  };
+
   const handleAddList = () => {
     if (!newListName.trim()) return;
     createList(newListName);
@@ -246,15 +259,31 @@ export function Board({ boardId, onBack, onLogout }: BoardProps) {
             </div>
           </div>
 
-          {/* Right: Logout button */}
-          <button
-            onClick={onLogout}
-            className="flex items-center gap-2 px-3 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg text-sm font-medium transition-colors"
-            title="Logout"
-          >
-            <LogOut className="w-4 h-4" />
-            <span className="hidden sm:inline">Logout</span>
-          </button>
+          {/* Right: Actions */}
+          <div className="flex items-center gap-2 sm:gap-4">
+            <button
+              onClick={handleDeleteBoard}
+              disabled={isDeletingBoard}
+              className="flex items-center gap-2 px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+              title="Delete Board"
+            >
+              {isDeletingBoard ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Trash2 className="w-4 h-4" />
+              )}
+              <span className="hidden sm:inline">Delete Board</span>
+            </button>
+
+            <button
+              onClick={onLogout}
+              className="flex items-center gap-2 px-3 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg text-sm font-medium transition-colors"
+              title="Logout"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden sm:inline">Logout</span>
+            </button>
+          </div>
         </div>
       </header>
 

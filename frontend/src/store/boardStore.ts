@@ -28,61 +28,52 @@ interface BoardState {
   removeCard: (cardId: number, listId: number) => void;
 }
 
+// Helper utility to safely sort cards by Lexorank position
+const sortCards = (cards: Card[]) => {
+  return [...cards].sort((a, b) => {
+    if (a.position < b.position) return -1;
+    if (a.position > b.position) return 1;
+    return 0;
+  });
+};
+
 export const useBoardStore = create<BoardState>((set, get) => ({
   board: null,
 
-  setBoard: (board) => set({ board }),
+  setBoard: (board) => {
+    // Ensure lists and cards are properly sorted when data comes from the API
+    const sortedBoard = {
+      ...board,
+      lists: board.lists.map((list) => ({
+        ...list,
+        cards: sortCards(list.cards),
+      })),
+    };
+    set({ board: sortedBoard });
+  },
 
   moveCardOptimistic: (cardId, sourceListId, targetListId, newIndex) => {
     const previousBoard = get().board;
     if (!previousBoard) return { previousBoard: null, card: undefined };
 
-    // Deep clone to avoid mutation issues
     const newBoard = JSON.parse(JSON.stringify(previousBoard)) as Board;
 
-    // Find source list and card
     const sourceList = newBoard.lists.find((l) => l.id === sourceListId);
     if (!sourceList) return { previousBoard, card: undefined };
 
     const cardIndex = sourceList.cards.findIndex((c) => c.id === cardId);
     if (cardIndex === -1) return { previousBoard, card: undefined };
 
-    // Remove card from source
     const [card] = sourceList.cards.splice(cardIndex, 1);
 
-    // Find target list
     const targetList = newBoard.lists.find((l) => l.id === targetListId);
     if (!targetList) return { previousBoard, card: undefined };
 
-    // Update card's list_id
     card.list_id = targetListId;
 
-    // Calculate correct insert position
     let insertIndex = newIndex;
-
-    // If same list and moving down, adjust index since we removed the card
-    if (sourceListId === targetListId && cardIndex < newIndex) {
-      // Card was removed from before the target position, so target shifts down by 1
-      // But we want to insert at the visual position, so use newIndex directly
-      // The array is already shorter by 1, so newIndex might be out of bounds
-      insertIndex = Math.min(newIndex, targetList.cards.length);
-    } else {
-      insertIndex = Math.min(newIndex, targetList.cards.length);
-    }
-
-    // Insert at new position
+    insertIndex = Math.min(newIndex, targetList.cards.length);
     targetList.cards.splice(insertIndex, 0, card);
-
-    console.log('Optimistic update:', {
-      cardId,
-      cardTitle: card.title,
-      sourceListId,
-      targetListId,
-      cardIndex,
-      newIndex,
-      insertIndex,
-      resultingOrder: targetList.cards.map(c => c.title),
-    });
 
     set({ board: newBoard });
     return { previousBoard, card };
@@ -101,8 +92,10 @@ export const useBoardStore = create<BoardState>((set, get) => ({
       const newBoard = { ...state.board };
       newBoard.lists = newBoard.lists.map((list) => ({
         ...list,
-        cards: list.cards.map((card) =>
-          card.id === cardId ? { ...card, ...updates } : card
+        cards: sortCards(
+          list.cards.map((card) =>
+            card.id === cardId ? { ...card, ...updates } : card
+          )
         ),
       }));
 
@@ -142,7 +135,7 @@ export const useBoardStore = create<BoardState>((set, get) => ({
           ...state.board,
           lists: state.board.lists.map((list) =>
             list.id === listId
-              ? { ...list, cards: [...list.cards, card] }
+              ? { ...list, cards: sortCards([...list.cards, card]) }
               : list
           ),
         },
@@ -158,8 +151,10 @@ export const useBoardStore = create<BoardState>((set, get) => ({
           ...state.board,
           lists: state.board.lists.map((list) => ({
             ...list,
-            cards: list.cards.map((card) =>
-              card.id === cardId ? { ...card, ...updates } : card
+            cards: sortCards(
+              list.cards.map((card) =>
+                card.id === cardId ? { ...card, ...updates } : card
+              )
             ),
           })),
         },

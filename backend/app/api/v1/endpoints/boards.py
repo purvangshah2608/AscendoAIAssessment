@@ -89,7 +89,7 @@ async def get_board(board_id: int, db: DbSession, current_user: CurrentUser):
                         "description": card.description,
                         "position": card.position,
                         "version": card.version,
-                        "list_id": card.list_id,  # <-- INCLUDE list_id
+                        "list_id": card.list_id,
                         "created_at": card.created_at
                     }
                     for card in sorted(lst.cards, key=lambda c: c.position)

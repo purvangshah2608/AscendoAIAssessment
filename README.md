@@ -274,3 +274,21 @@ board = await db.execute(
 |----------|----------------|-------------------|
 | 1 Board, 5 Lists, 100 Cards | 106 queries | 3 queries |
 | Database Load | High | Low |
+
+---
+
+## Testing
+
+The application includes an automated test suite covering core business logic and database interactions, including:
+- **Lexorank Algorithm** (Ordering logic)
+- **Optimistic Locking** (Concurrency and race condition prevention)
+- **Soft Deletes** (Data retention and auditability)
+- **N+1 Query Prevention** (Database optimization)
+
+Tests are executed in an isolated Docker environment using an in-memory SQLite database, ensuring they do not affect local data. 
+
+To run the test suite and generate a coverage report, run the following command from the root directory:
+
+```bash
+docker-compose -f docker-compose.test.yml up --build --abort-on-container-exit
+```

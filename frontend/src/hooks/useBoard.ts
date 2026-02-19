@@ -133,6 +133,17 @@ export function useBoard(boardId: number) {
     },
   });
 
+  const deleteBoardMutation = useMutation({
+    mutationFn: () => boards.delete(boardId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['boards'] });
+      toast.success('Board deleted successfully');
+    },
+    onError: () => {
+      toast.error('Failed to delete board');
+    },
+  });
+
   return {
     board,
     isLoading: query.isLoading,
@@ -143,5 +154,7 @@ export function useBoard(boardId: number) {
     deleteCard: deleteCardMutation.mutate,
     deleteList: deleteListMutation.mutate,
     isMovingCard: moveCardMutation.isPending,
+    deleteBoard: deleteBoardMutation.mutateAsync,
+    isDeletingBoard: deleteBoardMutation.isPending,
   };
 }
